@@ -1,0 +1,23 @@
+    * {
+        font-family: sans-serif;
+    }
+
+    h1 {
+        color: darkorange;
+    }
+
+    .important {
+        color:rgb(196, 168, 168);
+    }
+
+    footer {
+        position: fixed;
+        bottom: 0;
+    }
+    .emptyspace {
+    width: 30%
+    }
+    .error {
+        color: orange;
+        font-weight: bold;
+    }

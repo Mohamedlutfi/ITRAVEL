@@ -1,0 +1,13 @@
+<div>
+    <h1>List of Skills</h1>
+    <div>
+        <ul>
+        {{#each skills}}
+            <li>{{sname}}, expertise: {{slevel}}/5</li>
+        {{/each}}
+        </ul>
+        {{#if error}}
+            <p class="error">{{error}}</p>
+        {{/if}}
+    </div>
+</div>

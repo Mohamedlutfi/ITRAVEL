@@ -1,0 +1,13 @@
+<div>
+    <h1>List of Projects</h1>
+    <div>
+        <ul>
+        {{#each projects}}
+            <li>{{pname}}:  {{pdesc}} Year: {{pyear}}.</li>
+        {{/each}}
+        </ul>
+        {{#if error}}
+            <p class="error">{{error}}</p>
+        {{/if}}
+    </div>
+</div>

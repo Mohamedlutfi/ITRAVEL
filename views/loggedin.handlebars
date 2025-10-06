@@ -1,0 +1,15 @@
+<div>
+    <h1>Login</h1>
+    <div>
+        {{#if session.isLoggedIn}}
+            <p>Welcome {{session.un}}</p>
+            <p>You are logged in!</p>
+            {{#if session.isAdmin}}
+                <p>You are an admin!</p>
+            {{/if}}
+        {{else}}
+            <p>Sorry {{session.un}}, you are not logged in!</p>
+            <a href="/login">Login page</a>
+        {{/if}}
+    </div>
+</div>
