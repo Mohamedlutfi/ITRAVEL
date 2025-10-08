@@ -12,7 +12,8 @@ let passwordError = document.getElementById("passchecktxt");
 let passwordCheck = document.getElementById("passwordCheck");
 let btn = document.getElementById("btn");
 let validationName = /^[a-zA-Z ]+$/; // only letters and spaces
-let validationEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;// basic email pattern
+const newLocal = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+let validationEmail = newLocal;// basic email pattern
 let validateionPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&])[A-Za-z\d#@$!%*?&]{8,24}$/;
 // At least one uppercase letter, one lowercase letter, one number and one special character
 // Minimum eight characters and maximum 24 characters

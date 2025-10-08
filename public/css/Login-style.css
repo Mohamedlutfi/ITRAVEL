@@ -120,24 +120,42 @@ form {
 
 .dropmenu{
     position:absolute;
-    width: 80vw;
+    width: 15vw;
     max-width: 30em;
     background-color: white  ;
-    top: 54%;
+    top: 60%;
     border-radius: 20px;
     border: 2px solid rgb(58, 0, 129);
     display: none;
     z-index: 3;
+    
 }
 .dropdownitem{
     color: white;
     padding: 10px;
     text-decoration: none;
     display: block;
-    color: rgb(255, 0, 0);
+    color: rgb(61, 61, 61);
     text-shadow: none;
     letter-spacing: 1px;
     transition: 500ms;
+}
+.triangle{
+    text-align: center;
+    color: white;
+    padding: 10px;
+    text-decoration: none;
+    display: block;
+    color: rgb(61, 61, 61);
+    text-shadow: none;
+    letter-spacing: 1px;
+    transition: 500ms;
+    background-color: transparent;
+    margin: 0;
+    top: 550px;
+    border-radius: 20px 20px 0 0 ;
+    text-align: center;
+    font-weight: bold;
 }
 .emoj{
     font-size: 1.2em;
@@ -147,7 +165,7 @@ form {
     transition: 500ms;
 }
 .green{
-    color: rgb(0, 255, 0);
+        color: #00b342;
 }
 
 
