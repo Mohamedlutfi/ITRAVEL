@@ -71,7 +71,7 @@ app.post('/login', async (req, res) => {// Login user (Create)
 
         if (await bcrypt.compare(password,userExists.password)){//comparing hashed password
 
-            return res.status(200).send({ message: "Login successful" });
+            res.status(200).send({ message: "Login successful" });
             const token = jwt.sign({ email: userExists.email }, SECRET, { expiresIn: "1h"});
             res.json({ token });// send token to the client
 

@@ -1,0 +1,200 @@
+.body {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    position: relative;
+   
+    height: 500vh;
+
+}
+
+.home-body {
+    background-color: rgb(0, 0, 0);
+    color: white;
+    margin: 0;
+    height: 90vh;
+    width: 85%;
+    border-radius: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    padding: 0;
+    flex-direction: column; /* Adjust for smaller screens */
+    position: relative;
+    top: 100px;
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 80%;
+    border-radius: 20px;
+}
+
+.video-container .video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(50%);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.videoTitle {
+    position: absolute;
+    top: 37%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    color: lightgray;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    letter-spacing: 0.1;
+}
+
+.videoText {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+        color: rgb(255, 255, 255);
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    letter-spacing: 0.1em;
+    font-size: 1.5rem;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    width: 80%;
+    opacity: 0.6;
+}
+.videobtn{
+        position: absolute;
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+        color: rgb(255, 255, 255);
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    letter-spacing: 0.1em;
+    font-size: 1.5rem;
+    text-align: center;
+    width: 100%;
+
+}
+/* .btnv{
+    background:none;
+    border: 2px rgb(97, 65, 0)  solid;
+    
+    
+    font-size: large;
+    color: white;
+    cursor: pointer;
+
+
+}
+.btnv:hover{
+    background-color:rgb(97, 65, 0) ;
+    transition: 200ms;
+    border-color:  rgb(154, 103, 0);
+    opacity: 1;
+    
+}
+ */
+
+
+.btnv {
+    
+  position: relative;
+  overflow: hidden;
+  width: 21%;
+  border: 2px rgb(97, 65, 0)  solid;
+  color: #000000;
+  display: inline-block;
+  font-size: 15px;
+  line-height: 15px;
+  padding: 18px 18px 17px;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  
+}
+
+.btnv span:first-child {
+  position: relative;
+  transition: color 600ms cubic-bezier(97, 65, 0, 1);
+  z-index: 10;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  letter-spacing: 0.05;
+    font-weight:500;
+}
+
+.btnv span:last-child {
+  color: white;
+  display: block;
+  position: absolute;
+  bottom: 0;
+  transition: all 500ms cubic-bezier(0.48, 0, 0.12, 1);
+  z-index: 100;
+  opacity: 0;
+  top: 50%;
+  left: 50%;
+  transform: translateY(225%) translateX(-50%);
+  height: 14px;
+  line-height: 13px;
+  width: 100%;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  letter-spacing: 0.05;
+}
+
+.btnv:after {
+  content: "";
+  position: absolute;
+  bottom: -50%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(154, 103, 0);
+  transform-origin: bottom center;
+  transition: transform 600ms cubic-bezier(0.48, 0, 0.12, 1);
+  transform: skewY(9.3deg) scaleY(0);
+  z-index: 50;
+  
+}
+
+.btnv:hover:after {
+  transform-origin: bottom center;
+  transform: skewY(9.3deg) scaleY(2);
+}
+
+.btnv:hover span:last-child {
+  transform: translateX(-50%) translateY(-50%);
+  opacity: 1;
+  transition: all 900ms cubic-bezier(0.48, 0, 0.12, 1);
+    background-color: none;
+
+}
+/* Responsive styles */
+@media (max-width: 768px) {
+
+    .videoTitle {
+        font-size: 2rem;
+                margin: 50px 0;
+
+    }
+
+    .videoText {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .videoTitle {
+        font-size: 1.5rem;
+        margin: 50px 0;
+    }
+
+
+    .videoText {
+        font-size: 0.875rem;
+    }
+}
