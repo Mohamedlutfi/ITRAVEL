@@ -74,6 +74,77 @@ app.get('/users', (req, res) => {
   });
 });
 
+ app.delete('/users', async (req, res) => {
+       // 1 == "1" // true
+       // 1 === 1 // true // jämför typ och värde
+
+        let {id} = req.body;
+        dab.run(`DELETE FROM users WHERE id = ?`, [id], function(err) {
+          if (err) {
+            return res.status(400).json({ error: err.message });
+          }
+            res.json({ deletedID: id });
+        });
+
+    });
+
+
+
+   app.put('/users', async (req, res) => {
+  let { id, name, email } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ error: "ID is required for update." });
+  }
+
+  // Om både name och email saknas, inget att uppdatera
+  if (name == null && email == null) {
+    return res.status(400).json({ error: "Nothing to update." });
+  }
+
+  // Om bara email finns – uppdatera email
+  if (email != null && name == null) {
+    dab.run(`UPDATE users SET email = ? WHERE id = ?`, [email, id], function (err) {
+      if (err) {
+        return res.status(400).json({ error: err.message });
+      }
+      res.json({ updatedID: id, updatedField: 'email' });
+    });
+    return;
+  }
+
+  // Om bara name finns – uppdatera name
+  if (name != null && email == null) {
+    dab.run(`UPDATE users SET name = ? WHERE id = ?`, [name, id], function (err) {
+      if (err) {
+        return res.status(400).json({ error: err.message });
+      }
+      res.json({ updatedID: id, updatedField: 'name' });
+    });
+    return;
+  }
+
+  // Om både name och email finns – uppdatera båda
+  dab.run(`UPDATE users SET name = ?, email = ? WHERE id = ?`, [name, email, id], function (err) {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    res.json({ updatedID: id, updatedField: 'name & email' });
+  });
+});
+
+   
+
+
+    app.delete('/users/table', async (req, res) => {
+        dab.run(`DROP TABLE users`, function(err) {
+          if (err) {
+            return res.status(400).json({ error: err.message });
+          }
+        });
+    });
+          
+
 let model=[
 
 ]
