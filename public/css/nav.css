@@ -38,10 +38,13 @@ body {
     padding: 0.5rem 1rem;
     border-radius: 10rem;
     width: fit-content;
+    text-decoration: none;
 }
 .nav-links a{
         background-color:rgb(58, 0, 129) ;
         border: 2px solid rgb(128, 0, 255);
+            text-decoration: none;
+    
 }
 .nav-links a:hover{
     background-color: rgb(128, 0, 255);

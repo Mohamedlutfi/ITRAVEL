@@ -40,6 +40,40 @@ app.use(session({ // define the session
     "resave": false,
     "secret": "This123Is@Another#456GreatSecret678%Sentence"
 }))
+const dab = new sqlite3.Database('./my-priject-data.sqlite3.db', (err) => {
+  if (err) {
+    console.error('Error opening database', err.message);
+  } else {
+    console.log('Connected to SQLite database.');
+  }
+});
+dab.run(`CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT,
+  email TEXT
+)`);
+
+// Add a new user
+app.post('/users', (req, res) => {
+  const { name, email } = req.body;
+  dab.run(`INSERT INTO users (name, email) VALUES (?, ?)`, [name, email], function(err) {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    res.json({ id: this.lastID });
+  });
+});
+//l
+// Get all users
+app.get('/users', (req, res) => {
+  dab.all(`SELECT * FROM users`, [], (err, rows) => {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    res.json({ users: rows });
+  });
+});
+
 let model=[
 
 ]
