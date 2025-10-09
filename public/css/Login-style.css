@@ -1,5 +1,5 @@
 body {
-    background-image: url("/img/natural-winter-illustration.jpg");
+    background-image: url("05-nature-backgrounds_1491895829.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -18,11 +18,11 @@ h1 {
     color: white;
     text-align: center;
     margin-bottom: 1rem;
-    text-shadow: 0.125em 0.125em 0.3125em rgb(58, 0, 129);
+    text-shadow: 0.125em 0.125em 0.3125em rgb(97, 65, 0);
     font-size: 2.5rem;
 }
 form {
-    border: 0.125em solid rgb(58, 0, 129);
+    border: 0.125em solid rgb(97, 65, 0);
     padding: 3vw;
     padding-top: 3vw;
     border-radius: 0.625em;
@@ -34,7 +34,7 @@ form {
 .t-Input {
     background-color: transparent;
     border: none;
-    border-bottom: 0.125em solid rgb(128, 0, 255);
+    border-bottom: 0.125em solid rgb(154, 103, 0);
     width: 80vw;
     max-width: 30em;
     color: white;
@@ -48,7 +48,7 @@ form {
 }
 .t-Input:focus {
     outline: none;
-    border-bottom: 0.125em solid rgb(58, 0, 129);
+    border-bottom: 0.125em solid rgb(97, 65, 0);
     transition: 200ms;
 }
 .t-Input::placeholder {
@@ -60,13 +60,13 @@ form {
 }
 .t-Input:hover {
     transition: 200ms;
-    border-bottom: 0.125em solid rgb(58, 0, 129);
-    box-shadow: 0 0.375em 0.10625em -0.125em rgb(58, 0, 129);
+    border-bottom: 0.125em solid rgb(97, 65, 0);
+    box-shadow: 0 0.375em 0.10625em -0.125em rgb(97, 65, 0);
 }
 .btn {
     width: 100%;
     padding: 0.625em;
-    background-color: rgb(58, 0, 129);
+    background-color: rgb(97, 65, 0);
     color: white;
     font-size: 1.25em;
     font-weight: bold;
@@ -76,7 +76,7 @@ form {
 
 }
 .btn:hover {
-    background-color: rgb(128, 0, 255);
+    background-color: rgb(154, 103, 0);
     cursor: pointer;
     transition: 200ms;
     border: 0.0625em solid white;
@@ -126,7 +126,7 @@ form {
     background-color: white  ;
     top: 60%;
     border-radius: 20px;
-    border: 2px solid rgb(58, 0, 129);
+    border: 2px solid rgb(97, 65, 0);
     display: none;
     z-index: 3;
     
