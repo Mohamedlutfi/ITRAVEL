@@ -7,4 +7,4 @@
 <br>
 <br>
 <br>
-<p>Welcome to your profile page! {{session.user}}</p>
+<p>Welcome to your profile page! {{#if user.fullname}}{{user.fullname}}{{else}}{{session.user}}{{/if}}</p>

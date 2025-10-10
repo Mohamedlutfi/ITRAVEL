@@ -259,65 +259,91 @@ dab.run(sql, [fullname, user, email, hashedPassword], function(err) {
   }});
   //--- LOGIN PROCESSING
   app.post('/login', (request, response) => {
-    const { user, pw } = request.body;
+    // Support two shapes:
+    // - form posts: { email, password }
+    // - legacy posts: { user, pw }
+    const email = request.body.email;
+    const password = request.body.password;
+    const user = request.body.user;
+    const pw = request.body.pw;
 
-    // Check if both username and password are provided
-    if (!user || !pw) {
-      const model = { error: "Please provide both username and password." };
-      response.render('login', model);
-      return;
+    // Determine identifier and password value
+    const identifier = email || user;
+    const passwordToCheck = password || pw;
+
+    // Helper to detect JSON/AJAX requests
+    const wantsJSON = request.is('application/json') || (request.get('Accept') || '').includes('application/json') || request.xhr;
+
+    if (!identifier || !passwordToCheck) {
+      const model = { error: "Please provide both username/email and password." };
+      if (wantsJSON) {
+        return response.status(400).json({ error: model.error });
+      }
+      return response.render('login', model);
     }
 
-    // Query the database for the user
-    const sql = 'SELECT * FROM users WHERE user = ?';
-    dab.get(sql, [user], (err, row) => {
+    // Choose SQL depending on whether identifier looks like an email
+    const isEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(identifier);
+    const sql = isEmail ? 'SELECT * FROM users WHERE email = ?' : 'SELECT * FROM users WHERE user = ?';
+
+    dab.get(sql, [identifier], (err, row) => {
       if (err) {
         console.error('Error querying the database', err.message);
         const model = { error: "Error during login. Please try again." };
-        response.render('login', model);
-        return;
+        if (wantsJSON) return response.status(500).json({ error: model.error });
+        return response.render('login', model);
       }
 
       if (!row) {
         console.log('User not found');
         const model = { error: "Invalid username or password. Please try again." };
-        response.render('login', model);
-        return;
+        if (wantsJSON) return response.status(401).json({ error: model.error });
+        return response.render('login', model);
       }
 
       // Compare the provided password with the hashed password in the database
-      bcrypt.compare(pw, row.password, (err, result) => {
+      bcrypt.compare(passwordToCheck, row.password, (err, result) => {
         if (err) {
           console.error('Error in password comparison', err.message);
           const model = { error: "Error during login. Please try again." };
-          response.render('login', model);
-          return;
+          if (wantsJSON) return response.status(500).json({ error: model.error });
+          return response.render('login', model);
         }
+
 
         if (result) {
           // Password matches, set session variables
           request.session.isLoggedIn = true;
-          request.session.un = row.user;
+          request.session.user = row.user; // make session.user available to templates
+          request.session.un = row.user; // backward compatible name used in some templates
           request.session.userData = row; // Store user data in session
           console.log('---> SESSION INFORMATION: ', JSON.stringify(request.session));
-          response.redirect('/MyProfile'); // Redirect to MyProfile page
+
+          if (wantsJSON) {
+            return response.json({ success: true, redirect: '/MyProfile' });
+          }
+          return response.redirect('/MyProfile'); // Redirect to MyProfile page
         } else {
           console.log('Wrong password');
           const model = { error: "Invalid username or password. Please try again." };
-          response.render('login', model);
+          if (wantsJSON) return response.status(401).json({ error: model.error });
+          return response.render('login', model);
         }
       });
     });
   });
 
-  app.get('/MyProfile', (request, response) => {
-    if (request.session.isLoggedIn) {
-      const userData = request.session.userData; // Retrieve user data from session
-      response.render('MyProfile', { user: userData }); // Render the profile page with user data
-    } else {
-      response.redirect('/login'); // Redirect to login if not logged in
-    }
+  app.get('/MyProfile', ensureAuthenticated, (request, response) => {
+    // User is guaranteed to be authenticated by the middleware
+    const userData = request.session.userData; // Retrieve user data from session
+    response.render('MyProfile', { user: userData }); // Render the profile page with user data
   });
+
+// Optional: small reusable middleware for protecting routes
+function ensureAuthenticated(req, res, next) {
+  if (req.session && req.session.isLoggedIn && req.session.userData && req.session.userData.id) return next();
+  return res.redirect('/login');
+}
 
 //--- LOGOUT PROCESSING
 app.get('/logout', (req, res) => {

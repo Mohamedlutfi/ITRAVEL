@@ -23,12 +23,20 @@
       
         <a href="http://localhost:8080/home" class="Home link">Home</a>
         <a href="http://localhost:8080/skills" class="Skills link">Gallary</a>
-        <a href="http://localhost:8080/projects" class="Project link">About</a>
+           {{#if session.isLoggedIn}}
+                    <a href="/MyProfile" class="Profile link">Profile</a>
+                {{/if}}
+                <a href="http://localhost:8080/projects" class="Project link">About</a>
+             
         <a href="http://localhost:8080/contact" class="Contact link">Contact</a>
      </div>   
-     <div class="nav-login">
-        <a href="http://localhost:8080/login" class="Login">Login</a>
-     </div>
+         <div class="nav-login">
+                {{#if session.isLoggedIn}}
+                    <a href="/logout" class="Login">Logout</a>
+                {{else}}
+                    <a href="/login" class="Login">Login</a>
+                {{/if}}
+         </div>
     </header>
 
         {{{body}}}
