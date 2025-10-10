@@ -49,8 +49,10 @@ const dab = new sqlite3.Database('./my-priject-data.sqlite3.db', (err) => {
 });
 dab.run(`CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT,
-  email TEXT
+  fullname TEXT,
+  user TEXT UNIQUE,
+  email TEXT UNIQUE,
+  password TEXT
 )`);
 
 // Add a new user
@@ -62,8 +64,8 @@ app.post('/users', (req, res) => {
     }
     res.json({ id: this.lastID });
   });
-}); 
-//lfafsa
+});
+
 // Get all users
 app.get('/users', (req, res) => {
   dab.all(`SELECT * FROM users`, [], (err, rows) => {
@@ -205,38 +207,117 @@ app.get('/login', (request, response) => {
     response.render('login') // the login form to send to the client
 })
 app.get('/register', (request, response) => {
-    response.render('register') // the login form to send to the client
+    response.render('register') // the register form to send to the client
 })
-//--- LOGIN PROCESSING
-app.post('/login', (request, response) => {
-    // the treatment of the data received from the client form
-    console.log(`Here comes the data received from the form on the client: ${request.body.un} - ${request.body.pw} `)
-    if (request.body.un==="admin") {
-        bcrypt.compare(request.body.pw, adminPassword, (err, result) => {
-            if (err) {
-                console.log('Error in password comparison')
-                model = { error: "Error in password comparison." }
-                response.render('login', model)
-            }
-            if (result){
-                request.session.isLoggedIn=true
-                request.session.un=request.body.un
-                request.session.isAdmin=true
-                console.log('---> SESSION INFORMATION: ', JSON.stringify(request.session)) 
-                response.render('loggedin')
-            } else {
-                console.log('Wrong password')
-                model = { error: "Wrong password! Please try again." }
-                response.render('login', model)
-            }
-        })
-    } else {
-        console.log('Wrong username')
-        model = { error: "Wrong username! Please try again." }
-        response.render('login', model)
-    }
-})
+app.post('/register', (request, response) => {
+  const { fullname, user, email, password, passwordCheck } = request.body;
 
+  // Define validation patterns
+  const patterns = {
+    name: /^[a-zA-Z ]+$/, // Only letters and spaces
+    user: /^[a-zA-Z0-9_]{3,16}$/,
+    email: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/, // Basic email pattern
+    password: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,24}$/ // Minimum 8 characters, at least one letter and one number
+  };
+
+  // Validate input fields
+  if (
+    fullname.length > 0 &&
+    email.length > 0 &&
+    password.length > 0 &&
+    patterns.name.test(fullname) &&
+    patterns.email.test(email) &&
+    patterns.password.test(password) &&
+    patterns.user.test(user) &&
+    password === passwordCheck
+  ) {
+    // Hash the password before saving
+    bcrypt.hash(password, 10, (err, hashedPassword) => {
+      if (err) {
+        console.error('Error hashing password', err.message);
+        response.render('register', { message: "Error during registration. Please try again." });
+        return;
+      }
+
+      const sql = 'INSERT INTO users (fullname, user, email, password) VALUES (?, ?, ?, ?)';
+dab.run(sql, [fullname, user, email, hashedPassword], function(err) {
+  if (err) {
+    if (err.message.includes('UNIQUE constraint failed')) {
+      console.error('Duplicate user or email', err.message);
+      response.render('register', { message: "User or email already exists. Please try again." });
+    } else {
+      console.error('Error inserting user into database', err.message);
+      response.render('register', { message: "Error during registration. Please try again." });
+    }
+    return;
+  }
+  console.log(`A new user has been inserted with rowid ${this.lastID}`);
+  response.render('register', { message: "Registration successful!" });
+});
+
+}); 
+  }});
+  //--- LOGIN PROCESSING
+  app.post('/login', (request, response) => {
+    const { user, pw } = request.body;
+
+    // Check if both username and password are provided
+    if (!user || !pw) {
+      const model = { error: "Please provide both username and password." };
+      response.render('login', model);
+      return;
+    }
+
+    // Query the database for the user
+    const sql = 'SELECT * FROM users WHERE user = ?';
+    dab.get(sql, [user], (err, row) => {
+      if (err) {
+        console.error('Error querying the database', err.message);
+        const model = { error: "Error during login. Please try again." };
+        response.render('login', model);
+        return;
+      }
+
+      if (!row) {
+        console.log('User not found');
+        const model = { error: "Invalid username or password. Please try again." };
+        response.render('login', model);
+        return;
+      }
+
+      // Compare the provided password with the hashed password in the database
+      bcrypt.compare(pw, row.password, (err, result) => {
+        if (err) {
+          console.error('Error in password comparison', err.message);
+          const model = { error: "Error during login. Please try again." };
+          response.render('login', model);
+          return;
+        }
+
+        if (result) {
+          // Password matches, set session variables
+          request.session.isLoggedIn = true;
+          request.session.un = row.user;
+          request.session.userData = row; // Store user data in session
+          console.log('---> SESSION INFORMATION: ', JSON.stringify(request.session));
+          response.redirect('/MyProfile'); // Redirect to MyProfile page
+        } else {
+          console.log('Wrong password');
+          const model = { error: "Invalid username or password. Please try again." };
+          response.render('login', model);
+        }
+      });
+    });
+  });
+
+  app.get('/MyProfile', (request, response) => {
+    if (request.session.isLoggedIn) {
+      const userData = request.session.userData; // Retrieve user data from session
+      response.render('MyProfile', { user: userData }); // Render the profile page with user data
+    } else {
+      response.redirect('/login'); // Redirect to login if not logged in
+    }
+  });
 
 //--- LOGOUT PROCESSING
 app.get('/logout', (req, res) => {
@@ -265,6 +346,4 @@ function hashPassword(pw, saltRounds) {
             console.log(`---> Hashed password: ${hash}`);
         }
     });
-}
-
-
+}      

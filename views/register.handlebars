@@ -1,19 +1,19 @@
 <div class="form-container">
-    <form action="Post">
+    <form action="/register" method="post" id="registerForm">
         
         <h1>Register</h1>
-        <div class="login">
-        <input type="text" name="name" id="name" class="t-Input" placeholder="Type your Full name">
+    <div class="login">
+    <input type="text" name="fullname" id="name" class="t-Input" placeholder="Type your Full name">
         </div>
 
         <p  class="validation" id="Fnametxt">You have to use regular characters (a/z),(A/Z)</p>
-        <div class="login">
-        <input type="text" name="name" id="user" class="t-Input" placeholder="Type your Username">
+    <div class="login">
+    <input type="text" name="user" id="user" class="t-Input" placeholder="Type your Username">
         <p  class="validation" id="usererror">only regular letters/numbers and over 3 character</p>
         </div>
         {{!-- <p  class="validation" id="Fnametxt">You have to use regular characters (a/z),(A/Z)</p> --}}
-        <div class="login">
-        <input type="text" name="mail" id="mail" class="t-Input" placeholder="Type your email">
+    <div class="login">
+    <input type="text" name="email" id="mail" class="t-Input" placeholder="Type your email">
         </div>
         <p class="validation" id="mailtxt">Type the right mail format</p>
         <div class="password">

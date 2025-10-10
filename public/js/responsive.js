@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			openMenu();
 		}
 	});
+	
 
 	// Close when clicking outside the nav on small screens
 	document.addEventListener('click', function (e) {
