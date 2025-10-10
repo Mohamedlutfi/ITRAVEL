@@ -3,9 +3,7 @@
     justify-content: center;
     height: 100vh;
     position: relative;
-   
     height: 500vh;
-
 }
 
 .home-body {
@@ -20,7 +18,7 @@
     padding: 0;
     flex-direction: column; /* Adjust for smaller screens */
     position: relative;
-    top: 100px;
+    top: 150px;
 }
 
 .video-container {
@@ -51,7 +49,12 @@
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     letter-spacing: 0.1;
 }
+.vtshare{
+    color: rgb(97, 65, 0);
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    letter-spacing: 0.1;
 
+}
 .videoText {
     position: absolute;
     top: 70%;
@@ -185,8 +188,16 @@
     .videoText {
         font-size: 1rem;
     }
-}
+    .btnv span{
+                font-size: 0.7rem;
 
+    }
+}
+::selection {
+    background: #ffffff;
+    color: black;
+    text-shadow: none;
+}
 @media (max-width: 480px) {
     .videoTitle {
         font-size: 1.5rem;
@@ -196,5 +207,9 @@
 
     .videoText {
         font-size: 0.875rem;
+    }
+        .btnv span{
+                font-size: 0.5rem;
+
     }
 }

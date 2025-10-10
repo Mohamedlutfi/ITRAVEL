@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>ITravel</title>
-        <link rel="icon" type="image/x-icon" href="img/Project_logo.png">
+        <link rel="icon" type="image/x-icon" href="img/newlogo.png">
         <link rel="stylesheet" href="/css/jl-styles.css">
         <link rel="stylesheet" href="/css/Login-style.css">
         <link rel="stylesheet" href="/css/nav.css">
@@ -12,7 +12,13 @@
     </head>
     <body>
  <header class="nav">
-      <a href="/home" class="logo"><img src="img/newlogo.png" alt="" width="">ITravel</a>
+            <a href="/home" class="logo"><img src="img/newbrun.png" alt="" width=""><span class="logoTxt">ITravel</span></a>
+                <!-- hamburger menu for small screens -->
+                <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                        <span class="bar bar1"></span>
+                        <span class="bar bar2"></span>
+                        <span class="bar bar3"></span>
+                </button>
         <div class="nav-links">
       
         <a href="http://localhost:8080/home" class="Home link">Home</a>
@@ -29,5 +35,6 @@
         <footer>
             &copy; JL - 2025
         </footer>
+        <script src="/js/responsive.js"></script>
     </body>
 </html>
