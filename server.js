@@ -168,11 +168,11 @@ app.get('/contact', (request, response) => {
 app.get('/home', (request, response) => { 
     response.render('home') // the landing page information
 });
-app.get('/skills', (request, response) => {
-    response.render('skills') // the skills information
+app.get('/gallary', (request, response) => {
+    response.render('gallary') // the gallary information
 });
-app.get('/projects', (request, response) => {
-    response.render('projects') // the projects information
+app.get('/about', (request, response) => {
+    response.render('about') // the projects information
 });
 app.get('/listofprojects', (request,response) => {
     db.all('SELECT * FROM projects', (err, theProjects) => {

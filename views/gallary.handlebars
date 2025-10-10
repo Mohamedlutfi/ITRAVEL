@@ -1,0 +1,12 @@
+<div>
+<div class="tripcards">
+    {{#each trips}}
+    <div class="card">
+        <img src="{{img}}" alt="{{title}}" class="cardimg">
+        <h2 class="cardtitle">{{title}}</h2>
+        <p class="cardtext">{{description}}</p>
+        <a href="/gallery"><button class="cardbtn">Explore {{title}}</button></a>
+    </div>
+    {{/each}}
+</div>
+</div>
