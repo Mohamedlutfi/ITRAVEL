@@ -17,7 +17,7 @@ margin: 0;
     padding: 0.5rem;
     backdrop-filter: blur(5px);
     border-bottom: 2px  solid  rgb(129, 86, 0);
-    z-index: 3;
+    z-index: 100;
     width: 100%;
     margin: 0;
 }
