@@ -153,6 +153,88 @@
     background: transparent;
 }
 
+/* Edit / Delete buttons shown on trip cards */
+.profile-trips .editBtn,
+.profile-trips .delBtn{
+    padding: 8px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+    transition: transform 0.12s ease, background-color 0.12s ease;
+}
+.profile-trips .editBtn{
+    background-color: rgba(54, 123, 54, 0.9); /* greenish */
+}
+.profile-trips .editBtn:hover{
+    background-color: rgba(70, 150, 70, 0.95);
+    transform: translateY(-1px);
+}
+.profile-trips .delBtn{
+    background-color: rgba(180, 50, 50, 0.95); /* red */
+}
+.profile-trips .delBtn:hover{
+    background-color: rgba(200, 70, 70, 1);
+    transform: translateY(-1px);
+}
+.profile-trips .editBtn:focus,
+.profile-trips .delBtn:focus{
+    outline: 3px solid rgba(255, 206, 102, 0.4);
+    outline-offset: 2px;
+}
+.profile-trips .cardoverlay > div{
+    display: flex !important;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.profile-trips .card-actions{
+    margin-top: 8px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.profile-trips .card-actions .editBtn,
+.profile-trips .card-actions .delBtn{
+    min-width: 80px;
+}
+
+/* File preview and validation UI */
+#file-preview{
+    display: none;
+}
+#file-preview-img{
+    border: 2px solid rgba(154,103,0,0.8);
+    padding: 4px;
+    background: rgba(0,0,0,0.2);
+}
+#file-validation{
+    font-size: 0.95rem;
+    background: rgba(255,255,255,0.03);
+    padding: 8px 10px;
+    border-radius: 6px;
+}
+
+/* Make the buttons compact on small screens */
+@media (max-width: 520px) {
+    .profile-trips .editBtn,
+    .profile-trips .delBtn{
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+}
+
+/* Profile page: use hover to reveal the overlay (like homepage), but scope
+   and position it so buttons are visible and not clipped. */
+/* Use the site-wide .cardoverlay hover rules from Home.css for profile cards.
+   We keep only the button styles here to avoid duplicating global overlay logic. */
+
 /* Make form controls full-width on small screens */
 @media (max-width: 768px) {
     .profile-form .t-Input,

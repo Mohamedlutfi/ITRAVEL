@@ -296,6 +296,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
 }
 
 .card:hover {
@@ -316,18 +317,25 @@
 
 .cardoverlay {
     color: white;
-    position: relative;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
     opacity: 0;
     background-color: #000000a0;
-    height: 100%;
-    width: 100%;
-    transition: 500ms ease;
+    transition: opacity 500ms ease, transform 300ms ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    z-index: 2;
 }
 
-.card:hover :last-child {
+.card:hover .cardoverlay {
     opacity: 1;
-    position: absolute;
-    top: 200px;
+    transform: translateY(0);
 }
 
 .cardoverlay .cardtitleoverlay {

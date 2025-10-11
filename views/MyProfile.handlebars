@@ -15,15 +15,19 @@
         </div>
     </div>
     <div class="profile-content">
-     <div class="profile-form">
-    <form action="post" >
+    <div class="profile-form">
+    <form action="/trips" method="post" enctype="multipart/form-data">
         <h2>Create a new Memory</h2>
         <input type="text" name="title" class="t-Input"  placeholder="Memory Title" required>
         <textarea name="description" class="t-Input" maxlength="75" placeholder="Short Memory description" required></textarea>
         <br>
-        <input type="file" name="file" accept="image/*" required placeholder="Choose a photo">
+        <input id="trip-file" type="file" name="file" accept="image/*" placeholder="Choose a photo">
+        <div id="file-preview" aria-hidden="true" style="display:none; margin-top:8px;">
+            <img id="file-preview-img" src="" alt="preview" style="max-width:120px; max-height:120px; border-radius:8px;">
+        </div>
+        <div id="file-validation" role="status" aria-live="polite" style="margin-top:8px;color:#ffd;display:none;"></div>
         <br>
-        <br>    
+        <br>
         <button type="submit">Create/Update memory</button>
     </form>
     </div>
@@ -39,10 +43,15 @@
             <h2 class="cardtitleoverlay">{{title}}</h2>
             <p class="cardtextoverlay">{{description}}</p>
             <div class="cardoverlaybg"></div>
+            <div class="card-actions">
+                <button data-id="{{id}}" class="editBtn">Edit</button>
+                <button data-id="{{id}}" class="delBtn">Delete</button>
+            </div>
         </div>
     </div>
     {{/each}}
     </div>
 </div>
 </div>
+<script src="/js/profile.js"></script>
 </div>

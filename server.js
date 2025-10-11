@@ -6,6 +6,9 @@ const bcrypt=require('bcrypt')
 const session=require('express-session')
 const sqlite3=require('sqlite3') // load the sqlite3 package
 const connectSqlite3 = require('connect-sqlite3') // store the sessions in a SQLite3 database file
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 
 //--- DEFINE VARIABLES AND CONSTANTS
@@ -54,6 +57,99 @@ dab.run(`CREATE TABLE IF NOT EXISTS users (
   email TEXT UNIQUE,
   password TEXT
 )`);
+
+// Create trips table linked to users
+dab.run(`CREATE TABLE IF NOT EXISTS trips (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  title TEXT,
+  description TEXT,
+  img TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(user_id) REFERENCES users(id)
+)`);
+
+// --- File upload setup (multer)
+const uploadDir = path.join(__dirname, 'public', 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, unique + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage: storage, limits: { fileSize: 5 * 1024 * 1024 } });
+
+// --- Trips endpoints (authenticated)
+// Create trip
+app.post('/trips', ensureAuthenticated, upload.single('file'), (req, res) => {
+  const userId = req.session.userData.id;
+  const title = req.body.title || '';
+  const description = req.body.description || '';
+  const img = req.file ? '/uploads/' + req.file.filename : null;
+  const sql = 'INSERT INTO trips (user_id, title, description, img) VALUES (?, ?, ?, ?)';
+  dab.run(sql, [userId, title, description, img], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    dab.get('SELECT * FROM trips WHERE id = ?', [this.lastID], (err, row) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ trip: row });
+    });
+  });
+});
+
+// Get trips for current user
+app.get('/trips', ensureAuthenticated, (req, res) => {
+  const userId = req.session.userData.id;
+  dab.all('SELECT * FROM trips WHERE user_id = ? ORDER BY created_at DESC', [userId], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ trips: rows });
+  });
+});
+
+// Update trip (title, description, optional new file)
+app.put('/trips/:id', ensureAuthenticated, upload.single('file'), (req, res) => {
+  const userId = req.session.userData.id;
+  const id = req.params.id;
+  const title = req.body.title || '';
+  const description = req.body.description || '';
+  dab.get('SELECT * FROM trips WHERE id = ? AND user_id = ?', [id, userId], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.status(404).json({ error: 'Trip not found' });
+    const newImg = req.file ? '/uploads/' + req.file.filename : row.img;
+    dab.run('UPDATE trips SET title = ?, description = ?, img = ? WHERE id = ?', [title, description, newImg, id], function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      // If a new file was uploaded and the row had an old image, remove it
+      if (req.file && row.img) {
+        const oldPath = path.join(__dirname, 'public', row.img.replace(/^\//, ''));
+        fs.unlink(oldPath, (e) => { /* ignore unlink errors */ });
+      }
+      res.json({ updatedID: id });
+    });
+  });
+});
+
+// Delete trip
+app.delete('/trips/:id', ensureAuthenticated, (req, res) => {
+  const userId = req.session.userData.id;
+  const id = req.params.id;
+  dab.get('SELECT * FROM trips WHERE id = ? AND user_id = ?', [id, userId], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.status(404).json({ error: 'Trip not found' });
+    dab.run('DELETE FROM trips WHERE id = ?', [id], function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      if (row.img) {
+        const oldPath = path.join(__dirname, 'public', row.img.replace(/^\//, ''));
+        fs.unlink(oldPath, (e) => { /* ignore unlink errors */ });
+      }
+      res.json({ deletedID: id });
+    });
+  });
+});
 
 // Add a new user
 app.post('/users', (req, res) => {
@@ -336,7 +432,15 @@ dab.run(sql, [fullname, user, email, hashedPassword], function(err) {
   app.get('/MyProfile', ensureAuthenticated, (request, response) => {
     // User is guaranteed to be authenticated by the middleware
     const userData = request.session.userData; // Retrieve user data from session
-    response.render('MyProfile', { user: userData }); // Render the profile page with user data
+    // Fetch this user's trips so the page can render them server-side on first load
+    dab.all('SELECT * FROM trips WHERE user_id = ? ORDER BY created_at DESC', [userData.id], (err, rows) => {
+      if (err) {
+        console.error('Error fetching trips for profile', err.message);
+        // Fall back to rendering without trips
+        return response.render('MyProfile', { user: userData, trips: [] });
+      }
+      response.render('MyProfile', { user: userData, trips: rows || [] }); // Render the profile page with user data and trips
+    });
   });
 
 // Optional: small reusable middleware for protecting routes
