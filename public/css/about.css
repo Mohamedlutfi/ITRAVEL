@@ -1,0 +1,162 @@
+.margine {
+  margin-top: 150px;
+}
+    
+.about-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: Arial, sans-serif;
+  color: #000000;
+  border: 2px solid rgb(129, 86, 0);
+  border-radius: 10px;
+ background-color: rgba(0, 0, 0, 0.3);
+  
+}
+
+.about-intro {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.about-intro h1 {
+  font-size: 2rem;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+
+.about-intro p {
+  margin: 0;
+  color: #ffffff;
+}
+
+.profile-card {
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.5); /* black inside */
+  color: #000000;
+  padding: 24px 180px 24px 24px; /* leave space on right for overlapping image */
+  border: 4px solid rgb(129, 86, 0); /* outer border color */
+  border-radius: 8px;   
+  overflow: visible;
+}
+
+.about-section .about-photo {
+  position: relative;
+}
+
+.about-section .about-photo .Pimg {
+  position: absolute;
+  right: -40px; /* sit   outside the card to the right */
+  top: 20px;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 4px solid #ffffff; /* white frame around image to separate from black */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+}
+
+.about-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 60px;
+  flex-wrap: wrap;
+}
+
+.about-section.reverse {
+  flex-direction: row-reverse;
+}
+
+.about-text {
+  flex: 1 1 65%;
+  padding: 20px 20px 20px 0;
+  display: block; /* vertical flow */
+}
+
+.about-photo {
+  
+  text-align: right;
+  padding-left: 20px;
+}
+
+.Pimg {
+  width: 190px;
+  height: 600px;
+
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.Pimg {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px;
+  width: 150px;
+}
+.Fi {
+    border-color:#000000; 
+  
+  
+}.Sc {
+  
+  border-radius: 50%;
+}
+
+/* Ensure photo left / text right by default and stack on small screens */
+.about-section {
+  flex-direction: row;
+}
+
+@media (max-width: 768px) {
+  .about-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .about-text, .about-photo {
+    flex: 1 1 100%;
+    padding: 10px;
+    text-align: left;
+  }
+
+  .about-photo {
+    text-align: center;
+  }
+
+  .profile-card {
+    padding: 16px;
+    border-width: 3px;
+    overflow: visible;
+  }
+
+  .about-section .about-photo .Pimg {
+    position: relative;
+    right: 0;
+    top: 0;
+    margin-top: 12px;
+    border-radius: 8px;
+    border: 3px solid #ffffff;
+  }
+
+  .about-intro h1 {
+    font-size: 1.6rem;
+  }
+}
+
+.about-text h2 {
+  color: #ffffff;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
+.about-text h3 {
+  font-size: 1.5rem;
+  font-style: italic;
+  margin-bottom: 20px;
+}
+
+.about-text p {
+  line-height: 1.6;
+  margin-bottom: 15px;
+}

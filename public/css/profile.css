@@ -1,0 +1,194 @@
+.profile-body{
+    background: url('../img/profilebg.jpg') no-repeat center center/cover;
+    height:fit-content  ;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.form2 {
+    border: 0.125em solid rgb(97, 65, 0);
+    padding: 3vw;
+    padding-top: 3vw;
+    border-radius: 0.625em;
+    backdrop-filter: blur(5px);
+    box-shadow: 0.125em 0.125em 0.625em black;
+    /* Constrain to viewport with requested outer margins: 100px top/bottom, 50px left/right */
+    width: 95vw;
+    max-width: 95vw;
+    box-sizing: border-box;
+    margin: 100px 50px;
+}
+
+/* On very small screens, reduce margins so content doesn't overflow */
+@media (max-width: 520px) {
+    .form2 {
+        width: calc(100vw - 32px);
+        max-width: calc(100vw - 32px);
+        margin: 40px 16px;
+        padding: 4vw;
+    }
+}
+.profile-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    height: fit-content;
+    margin-top: 100px;
+    /* two-column layout: info on the left (30%), content on the right (70%) */
+    flex-direction: row;
+}
+.profile-info{
+    flex: 0 0 30%; /* fixed basis so it stays left */
+    max-width: 340px;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.profile-info h1{
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+.profile-info p{
+    margin: 5px 0;
+    font-size: 16px;
+}
+.profile-content{
+    flex: 1 1 70%;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    height: fit-content;
+}
+.profile-content h2{
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+.profile-form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.profile-form input, .profile-form textarea{
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+/* Ensure shared t-Input width from global styles doesn't overflow the profile form */
+.profile-form .t-Input{
+    width: 100% !important;
+    max-width: 100% !important;
+}
+ .profile-form textarea{
+    min-height: 20vh;
+    max-height: 20vh;
+    width: 100%;
+    border:  0.125em solid rgb(154, 103, 0);
+    resize:none;
+
+ }
+ .profile-form input:focus, .profile-form textarea:focus{
+    outline: none;
+    box-shadow: 0 0 5px rgba(154, 103, 0, 0.8);
+}
+.profile-form input[type="file"]{
+    padding: 5px;
+    font-size: 14px;
+    background-color:transparent;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    color: rgb(255, 255, 255);
+    border: none;
+    width: 100%;
+    display: block;
+    
+}
+.profile-form input[type="file"]::file-selector-button{
+    padding: 5px 10px;
+    background-color: rgb(97, 65, 0);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.profile-form input[type="file"]::file-selector-button:hover{
+    background-color: rgb(154, 103, 0);
+    border: none;
+}
+.profile-form input[type="file"]::file-selector-button:focus , .profile-form input[type="file"]::file-selector-button:active , .profile-form input[type="file"]:active, .profile-form input[type="file"]:focus,.profile-form input[type="text"]:active{
+    outline: none;
+    box-shadow: none;
+    border: none;
+}
+
+.profile-form button{
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgb(97, 65, 0);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    /* keep button compact on wide layouts but allow full width on small screens */
+    width: auto;
+    align-self: flex-start;
+}
+.profile-form button:hover{
+    background-color: rgb(154, 103, 0);
+}
+.profile-trips{
+    background: transparent;
+}
+
+/* Make form controls full-width on small screens */
+@media (max-width: 768px) {
+    .profile-form .t-Input,
+    .profile-form textarea,
+    .profile-form input[type="file"],
+    .profile-form button{
+        width: 100% !important;
+        align-self: stretch;
+    }
+    .profile-form button{
+        text-align: center;
+    }
+}
+
+/* Responsive: stack profile sections on small screens */
+@media (max-width: 768px) {
+    .profile-container{
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+        margin-top: 60px;
+        padding: 14px;
+    }
+    .profile-info{
+        flex: 0 0 auto;
+        max-width: none;
+        width: 95%;
+        padding: 16px;
+        margin-bottom: 6px;
+        margin-right: 20px;
+    }
+    .profile-content{
+        flex: 0 0 auto;
+        width: 95%;
+        padding: 16px;
+    }
+    .profile-form textarea{ min-height: 18vh; }
+}
+

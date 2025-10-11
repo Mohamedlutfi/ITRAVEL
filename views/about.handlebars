@@ -1,13 +1,71 @@
-<div>
-    <h1>List of Projects</h1>
-    <div>
-        <ul>
-        {{#each projects}}
-            <li>{{pname}}:  {{pdesc}} Year: {{pyear}}.</li>
-        {{/each}}
-        </ul>
-        {{#if error}}
-            <p class="error">{{error}}</p>
-        {{/if}}
+<div class ="body">
+    <div class="margine">
+<div class="about-container">
+  <div class="about-intro">
+    <h1>About the two travelers</h1>
+    <p>Meet Yazan and Mohamed — two friends exploring the world and sharing their journey.</p>
+  </div>
+  <!-- Yazan Section -->
+  <section class="about-section">
+    <div class="about-text">
+      <h2>ABOUT Yazan</h2>
+      <div class="profile-card">
+        <div class="Fi">
+          <h3><em>Yazan</em></h3>
+          <p>
+            Hey! I'm <strong>Yazan</strong>, a 21-year-old traveler from <strong>Sweden</strong>.
+            I'm currently studying <strong>Software Engineering</strong>, but my biggest passion
+            is exploring the world and discovering everything about <strong>nature</strong> and
+            <strong>history</strong>.
+          </p>
+          <p>
+            I've been lucky enough to visit <strong>15 countries</strong> so far — each one teaching
+            me something new about life, culture, and adventure. My goal is to
+            <strong>visit every country in the world</strong>, and I truly believe that travel
+            doesn’t have to be expensive — it’s all about curiosity and experience.
+          </p>
+          <p>
+            Together with my best friend <strong>Mohamed</strong>, we document our travels,
+            share our favorite photos, and hope to inspire others to explore the beauty of our planet.
+          </p>
+        </div>
+      </div>
     </div>
+    <div class="about-photo">
+      <img src="/img/yaz.jpg" alt="Photo of Yazan" class="Pimg" />
+    </div>
+  </section>
+
+  <!-- Mohamed Section -->
+  <section class="about-section">
+    <div class="about-text">
+      <h2>ABOUT Mohamed</h2>
+      <div class="profile-card">
+        <div class="Sc">
+          <h3><em>Mohamed</em></h3>
+          <p>
+            Hi! I'm <strong>Mohamed</strong>, 20 years old and also from <strong>Sweden</strong>.
+            I study <strong>Software Engineering</strong> at the same university as Yazan,
+            where our friendship and travel journey began.
+          </p>
+          <p>
+            I’ve visited <strong>10 countries</strong> so far, and what I love most is exploring
+            the <strong>history</strong> and <strong>natural beauty</strong> of each place —
+            from mountains and forests to ancient cities full of stories.
+          </p>
+          <p>
+            Traveling with Yazan makes every adventure more exciting. Our dream is to
+            <strong>travel to every country</strong> and share the journey with people who love
+            discovery and culture as much as we do.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="about-photo">
+      <img src="/img/moha.jpg" alt="Photo of Mohamed" class="Pimg" />
+    </div>
+  </section>
+</div>
+
+</div>
 </div>
