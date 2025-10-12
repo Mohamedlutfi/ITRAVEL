@@ -32,6 +32,8 @@ document.addEventListener('DOMContentLoaded', function () {
         <div class="gallery-info">
           <h3>${escapeHtml(t.title)}</h3>
           <p>${escapeHtml(t.description)}</p>
+          ${t.location_name ? ('<small>Location: ' + escapeHtml(t.location_name) + '</small>') : ''}
+          <br/>
           <small>by ${escapeHtml(t.username || 'unknown')}</small>
         </div>
       `;

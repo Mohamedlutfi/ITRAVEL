@@ -5,3 +5,22 @@
 .admin-row .mini-thumb{ width:48px; height:48px; object-fit:cover; border-radius:6px; }
 .admin-row button{ background:#b33; color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
 .admin-row button:hover{ background:#c55; }
+
+.admin-contact{ display:flex; justify-content:space-between; gap:12px; padding:12px; border-bottom:1px solid rgba(255,255,255,0.04); }
+.contact-main{ flex:1; }
+.contact-meta{ color:#ddd; margin-bottom:6px; }
+.contact-subject{ font-weight:600; margin-bottom:6px; }
+.contact-message{ background:rgba(255,255,255,0.03); padding:8px; border-radius:6px; color:#eee; white-space:pre-wrap; }
+.contact-actions button{ background:#b33; color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
+.contact-actions button:hover{ background:#c55; }
+
+.stats-grid{ display:flex; gap:18px; }
+.stat{ background:rgba(255,255,255,0.03); padding:16px; border-radius:8px; text-align:center; min-width:140px; }
+.stat-num{ font-size:28px; font-weight:700; color:#fff; }
+.stat-label{ font-size:12px; color:#ddd; margin-top:6px; }
+
+.location-add{ margin-top:12px; }
+.location-add form{ display:flex; gap:8px; align-items:center; }
+.location-add input{ padding:8px; border-radius:6px; border:1px solid rgba(255,255,255,0.06); background:transparent; color:#fff; }
+.location-add button{ padding:8px 12px; border-radius:6px; background:#3a7; color:#fff; border:none; cursor:pointer; }
+.location-add button:hover{ opacity:0.95; }

@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded', function () {
 	var form = document.querySelector('.profile-form form');
 	var tripsContainer = document.querySelector('.profile-trips');
+	 var locationSelect = document.getElementById('location-select');
 	// If the server pre-renders trips we should skip the client fetch once to avoid duplicate cards.
 	var skippedInitialServerRender = false;
 
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		trips.forEach(function (t) {
 			var div = document.createElement('div');
 			div.className = 'card';
-			div.innerHTML = '\n        <img src="' + (t.img || '/img/pick.jpg') + '" alt="' + escapeHtml(t.title) + '" class="cardimg">\n        <div class="cardoverlay">\n          <h2 class="cardtitleoverlay">' + escapeHtml(t.title) + '</h2>\n          <p class="cardtextoverlay">' + escapeHtml(t.description) + '</p>\n          <div class="cardoverlaybg"></div>\n          <div class="card-actions">\n            <button data-id="' + t.id + '" class="editBtn">Edit</button>\n            <button data-id="' + t.id + '" class="delBtn">Delete</button>\n          </div>\n        </div>\n      ';
+			div.innerHTML = '\n        <img src="' + (t.img || '/img/pick.jpg') + '" alt="' + escapeHtml(t.title) + '" class="cardimg">\n        <div class="cardoverlay">\n          <h2 class="cardtitleoverlay">' + escapeHtml(t.title) + '</h2>\n          <p class="cardtextoverlay">' + escapeHtml(t.description) + '</p>\n          ' + (t.location_name ? ('<p class="cardloc">Location: ' + escapeHtml(t.location_name) + '</p>') : '') + '\n          <div class="cardoverlaybg"></div>\n          <div class="card-actions">\n            <button data-id="' + t.id + '" class="editBtn">Edit</button>\n            <button data-id="' + t.id + '" class="delBtn">Delete</button>\n          </div>\n        </div>\n      ';
 			tripsContainer.appendChild(div);
 		});
 
@@ -82,6 +83,15 @@ document.addEventListener('DOMContentLoaded', function () {
 			}
 			if (form && form.querySelector('[name="title"]')) form.querySelector('[name="title"]').value = titleText || '';
 			if (form && form.querySelector('[name="description"]')) form.querySelector('[name="description"]').value = descText || '';
+			// set location select if available
+			if (form && form.querySelector('[name="location_id"]')) {
+				if (card && card.querySelector('.cardloc')) {
+					// parse location name from card DOM and try to match an option
+					var locText = card.querySelector('.cardloc').textContent.replace(/^Location:\s*/i, '').trim();
+					var opt = Array.from(form.querySelector('[name="location_id"]').options).find(o => o.text === locText);
+					if (opt) form.querySelector('[name="location_id"]').value = opt.value;
+				}
+			}
 			if (form) form.dataset.editId = id;
 			var btn = form ? form.querySelector('button[type=submit]') : null;
 			if (btn) btn.textContent = 'Update memory';
@@ -96,6 +106,10 @@ document.addEventListener('DOMContentLoaded', function () {
 				if (form && form.querySelector('[name="title"]')) form.querySelector('[name="title"]').value = trip.title || '';
 				if (form && form.querySelector('[name="description"]')) form.querySelector('[name="description"]').value = trip.description || '';
 				if (form) form.dataset.editId = trip.id;
+				// prefill location if available
+				if (form && form.querySelector('[name="location_id"]')) {
+					form.querySelector('[name="location_id"]').value = trip.location_id || '';
+				}
 				var btn2 = form ? form.querySelector('button[type=submit]') : null;
 				if (btn2) btn2.textContent = 'Update memory';
 				window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -168,6 +182,8 @@ document.addEventListener('DOMContentLoaded', function () {
 			}
 
 			var fd = new FormData(form);
+			// include location select if present
+			if (locationSelect && locationSelect.value) fd.set('location_id', locationSelect.value);
 			var editId = form.dataset.editId;
 			try {
 				var url = editId ? '/trips/' + editId : '/trips';

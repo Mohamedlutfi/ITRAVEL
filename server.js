@@ -78,6 +78,46 @@ dab.run(`CREATE TABLE IF NOT EXISTS trips (
   FOREIGN KEY(user_id) REFERENCES users(id)
 )`);
 
+// Create contacts table to store contact form submissions
+dab.run(`CREATE TABLE IF NOT EXISTS contacts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT,
+  email TEXT,
+  subject TEXT,
+  message TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+)`);
+
+// Create locations table to store allowed locations
+dab.run(`CREATE TABLE IF NOT EXISTS locations (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT UNIQUE,
+  description TEXT
+)`);
+
+// Create our_trips table to store curated images from public/img/trips
+dab.run(`CREATE TABLE IF NOT EXISTS our_trips (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  img TEXT,
+  title TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+)`);
+
+// Ensure trips table has a location_id column (SQLite allows ALTER TABLE ADD COLUMN)
+dab.all("PRAGMA table_info(trips)", [], (err, cols) => {
+  if (err) {
+    console.error('Error inspecting trips table', err && err.message);
+    return;
+  }
+  const hasLocation = (cols || []).some(c => c && c.name === 'location_id');
+  if (!hasLocation) {
+    dab.run('ALTER TABLE trips ADD COLUMN location_id INTEGER', (e) => {
+      if (e) console.error('Failed to add location_id column to trips:', e.message);
+      else console.log('Added location_id column to trips table');
+    });
+  }
+});
+
 // --- File upload setup (multer)
 const uploadDir = path.join(__dirname, 'public', 'uploads');
 if (!fs.existsSync(uploadDir)) {
@@ -100,11 +140,12 @@ app.post('/trips', ensureAuthenticated, upload.single('file'), (req, res) => {
   const userId = req.session.userData.id;
   const title = req.body.title || '';
   const description = req.body.description || '';
+  const locationId = req.body.location_id ? Number(req.body.location_id) : null;
   const img = req.file ? '/uploads/' + req.file.filename : null;
-  const sql = 'INSERT INTO trips (user_id, title, description, img) VALUES (?, ?, ?, ?)';
-  dab.run(sql, [userId, title, description, img], function (err) {
+  const sql = 'INSERT INTO trips (user_id, title, description, img, location_id) VALUES (?, ?, ?, ?, ?)';
+  dab.run(sql, [userId, title, description, img, locationId], function (err) {
     if (err) return res.status(500).json({ error: err.message });
-    dab.get('SELECT * FROM trips WHERE id = ?', [this.lastID], (err, row) => {
+    dab.get('SELECT trips.*, locations.name as location_name FROM trips LEFT JOIN locations ON trips.location_id = locations.id WHERE trips.id = ?', [this.lastID], (err, row) => {
       if (err) return res.status(500).json({ error: err.message });
       res.json({ trip: row });
     });
@@ -114,7 +155,8 @@ app.post('/trips', ensureAuthenticated, upload.single('file'), (req, res) => {
 // Get trips for current user
 app.get('/trips', ensureAuthenticated, (req, res) => {
   const userId = req.session.userData.id;
-  dab.all('SELECT * FROM trips WHERE user_id = ? ORDER BY created_at DESC', [userId], (err, rows) => {
+  const sql = 'SELECT trips.*, locations.name as location_name FROM trips LEFT JOIN locations ON trips.location_id = locations.id WHERE trips.user_id = ? ORDER BY trips.created_at DESC';
+  dab.all(sql, [userId], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ trips: rows });
   });
@@ -126,11 +168,12 @@ app.put('/trips/:id', ensureAuthenticated, upload.single('file'), (req, res) => 
   const id = req.params.id;
   const title = req.body.title || '';
   const description = req.body.description || '';
+  const locationId = req.body.location_id ? Number(req.body.location_id) : null;
   dab.get('SELECT * FROM trips WHERE id = ? AND user_id = ?', [id, userId], (err, row) => {
     if (err) return res.status(500).json({ error: err.message });
     if (!row) return res.status(404).json({ error: 'Trip not found' });
     const newImg = req.file ? '/uploads/' + req.file.filename : row.img;
-    dab.run('UPDATE trips SET title = ?, description = ?, img = ? WHERE id = ?', [title, description, newImg, id], function (err) {
+    dab.run('UPDATE trips SET title = ?, description = ?, img = ?, location_id = ? WHERE id = ?', [title, description, newImg, locationId, id], function (err) {
       if (err) return res.status(500).json({ error: err.message });
       // If a new file was uploaded and the row had an old image, remove it
       if (req.file && row.img) {
@@ -270,6 +313,22 @@ app.get('/', (request, response) => {
 app.get('/contact', (request, response) => {
     response.render('contact') // the contact information
 })
+
+// Save contact form submissions
+app.post('/contact-submit', (req, res) => {
+  const { name, email, subject, message } = req.body || {};
+  if (!name || !email || !message) {
+    return res.render('contact', { error: 'Please fill in name, email and message.', name, email, subject, message });
+  }
+  const sql = 'INSERT INTO contacts (name, email, subject, message) VALUES (?, ?, ?, ?)';
+  dab.run(sql, [name, email, subject || '', message], function (err) {
+    if (err) {
+      console.error('Error saving contact', err.message);
+      return res.render('contact', { error: 'Failed to save your message. Please try again later.' });
+    }
+    return res.render('contact', { message: 'Thank you — your message has been received!' });
+  });
+});
 app.get('/home', (request, response) => { 
     response.render('home') // the landing page information
 });
@@ -278,13 +337,31 @@ app.get('/gallary', (request, response) => {
 });
 
 app.get('/admin', ensureAdmin, (req, res) => {
-  res.render('admin');
+  // Compute basic stats and render them server-side so admin sees numbers without waiting for JS
+  dab.get('SELECT COUNT(*) AS userCount FROM users', [], (err, userRow) => {
+    if (err) {
+      console.error('Error computing admin stats (users):', err.message);
+      return res.render('admin');
+    }
+    dab.get('SELECT COUNT(*) AS tripCount FROM trips', [], (err2, tripRow) => {
+      if (err2) {
+        console.error('Error computing admin stats (trips):', err2.message);
+        return res.render('admin');
+      }
+      const userCount = userRow.userCount || 0;
+      const tripCount = tripRow.tripCount || 0;
+      const avg = userCount > 0 ? Number((tripCount / userCount).toFixed(2)) : 0;
+      res.render('admin', { stats: { users: userCount, trips: tripCount, avgTripsPerUser: avg } });
+    });
+  });
 });
 
 // Public API: return all trips from all users (for the gallery)
 app.get('/trips/all', (req, res) => {
   const sql = `SELECT trips.id, trips.user_id, trips.title, trips.description, trips.img, trips.created_at, users.user as username
+               , locations.name as location_name
                FROM trips LEFT JOIN users ON trips.user_id = users.id
+               LEFT JOIN locations ON trips.location_id = locations.id
                ORDER BY trips.created_at DESC`;
   dab.all(sql, [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -480,9 +557,19 @@ dab.run(sql, [fullname, user, email, hashedPassword], function(err) {
       if (err) {
         console.error('Error fetching trips for profile', err.message);
         // Fall back to rendering without trips
-        return response.render('MyProfile', { user: userData, trips: [] });
+          // still fetch locations to render the form
+          dab.all('SELECT id, name FROM locations ORDER BY name ASC', [], (err2, locs) => {
+            return response.render('MyProfile', { user: userData, trips: [], locations: locs || [] });
+          });
       }
-      response.render('MyProfile', { user: userData, trips: rows || [] }); // Render the profile page with user data and trips
+        // also fetch available locations to populate the select
+        dab.all('SELECT id, name FROM locations ORDER BY name ASC', [], (err2, locs) => {
+          if (err2) {
+            console.error('Error fetching locations for profile', err2.message);
+            return response.render('MyProfile', { user: userData, trips: rows || [], locations: [] });
+          }
+          response.render('MyProfile', { user: userData, trips: rows || [], locations: locs || [] }); // Render the profile page with user data, trips and locations
+        });
     });
   });
 
@@ -520,6 +607,66 @@ app.get('/admin/trips', ensureAdmin, (req, res) => {
   dab.all('SELECT trips.id, trips.title, trips.description, trips.img, users.user as username FROM trips LEFT JOIN users ON trips.user_id = users.id ORDER BY trips.created_at DESC', [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ trips: rows });
+  });
+});
+
+// Admin: list contact submissions
+app.get('/admin/contacts', ensureAdmin, (req, res) => {
+  dab.all('SELECT id, name, email, subject, message, created_at FROM contacts ORDER BY created_at DESC', [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ contacts: rows });
+  });
+});
+
+// Admin: statistics overview
+app.get('/admin/stats', ensureAdmin, (req, res) => {
+  // Run three queries and combine results
+  dab.get('SELECT COUNT(*) AS userCount FROM users', [], (err, userRow) => {
+    if (err) return res.status(500).json({ error: err.message });
+    dab.get('SELECT COUNT(*) AS tripCount FROM trips', [], (err2, tripRow) => {
+      if (err2) return res.status(500).json({ error: err2.message });
+      const userCount = userRow.userCount || 0;
+      const tripCount = tripRow.tripCount || 0;
+      const avg = userCount > 0 ? (tripCount / userCount) : 0;
+      res.json({ stats: { users: userCount, trips: tripCount, avgTripsPerUser: Number(avg.toFixed(2)) } });
+    });
+  });
+});
+
+// Admin: delete a contact entry
+app.delete('/admin/contacts/:id', ensureAdmin, (req, res) => {
+  const id = req.params.id;
+  dab.run('DELETE FROM contacts WHERE id = ?', [id], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ deletedID: id });
+  });
+});
+
+// Admin: manage locations
+app.get('/admin/locations', ensureAdmin, (req, res) => {
+  dab.all('SELECT id, name, description FROM locations ORDER BY name ASC', [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ locations: rows });
+  });
+});
+
+app.post('/admin/locations', ensureAdmin, (req, res) => {
+  const { name, description } = req.body || {};
+  if (!name) return res.status(400).json({ error: 'Name required' });
+  dab.run('INSERT INTO locations (name, description) VALUES (?, ?)', [name, description || ''], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    dab.get('SELECT id, name, description FROM locations WHERE id = ?', [this.lastID], (e, row) => {
+      if (e) return res.status(500).json({ error: e.message });
+      res.json({ location: row });
+    });
+  });
+});
+
+app.delete('/admin/locations/:id', ensureAdmin, (req, res) => {
+  const id = req.params.id;
+  dab.run('DELETE FROM locations WHERE id = ?', [id], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ deletedID: id });
   });
 });
 

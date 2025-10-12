@@ -1,9 +1,61 @@
+<div class="bodyy">
 <div>
     <h1>Contact</h1>
-    <div>
-        Email: <span class="important">jerome.landre@ju.se</span>
-    </div>
-    <div>
-        Phone: 07 07 07 07 07 
-    </div>
+   
+    
+</div>
+
+<link rel="stylesheet" href="/css/contact.css">
+
+<main class="contact-page">
+    <section class="contact-card">
+        <h2>Get in touch</h2>
+                <p class="lead">Have a question or want to work together? Fill out the form and we'll get back to you.</p>
+
+                {{#if message}}
+                    <div class="alert success">{{message}}</div>
+                {{/if}}
+                {{#if error}}
+                    <div class="alert error">{{error}}</div>
+                {{/if}}
+
+                <form class="contact-form" action="/contact-submit" method="post">
+            <div class="form-row">
+                <label for="name">Your name</label>
+                <input id="name" name="name" type="text" placeholder="Full name" required>
+            </div>
+
+            <div class="form-row">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" placeholder="you@example.com" required>
+            </div>
+
+            <div class="form-row">
+                <label for="subject">Subject</label>
+                <input id="subject" name="subject" type="text" placeholder="What is this about?" required>
+            </div>
+
+            <div class="form-row">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="6" placeholder="Write your message here" required></textarea>
+            </div>
+
+            <div class="form-row form-actions">
+                <button type="submit" class="btn-submit">Send message</button>
+            </div>
+        </form>
+    </section>
+
+    <aside class="contact-aside">
+        <div class="contact-info">
+            <h3>Contact Info</h3>
+            <p><strong>Email:</strong> <a href="mailto:jerome.landre@ju.se">jerome.landre@ju.se</a></p>
+            <p><strong>Phone:</strong> <a href="tel:+0707070707">07 07 07 07 07</a></p>
+        </div>
+    </aside>
+
+</main>
+
+<!-- small footer bar -->
+    
 </div>

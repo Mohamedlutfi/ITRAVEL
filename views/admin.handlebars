@@ -5,6 +5,21 @@
   <h1 class="margintop">Admin Dashboard</h1>
   <p>Manage users and gallery. You are logged in as admin.</p>
 
+  <section class="admin-section" id="admin-stats">
+    <h2>Statistics</h2>
+    {{#if stats}}
+      <div id="stats-panel">
+        <div class="stats-grid">
+          <div class="stat"><div class="stat-num">{{stats.users}}</div><div class="stat-label">Users</div></div>
+          <div class="stat"><div class="stat-num">{{stats.trips}}</div><div class="stat-label">Memories</div></div>
+          <div class="stat"><div class="stat-num">{{stats.avgTripsPerUser}}</div><div class="stat-label">Avg Memories / User</div></div>
+        </div>
+      </div>
+    {{else}}
+      <div id="stats-panel">Loading stats...</div>
+    {{/if}}
+  </section>
+
   <section class="admin-section" id="admin-users">
     <h2>Users</h2>
     <div id="users-list">Loading users...</div>
@@ -13,6 +28,24 @@
   <section class="admin-section" id="admin-trips">
     <h2>Gallery Trips</h2>
     <div id="trips-list">Loading trips...</div>
+  </section>
+
+  <section class="admin-section" id="admin-contacts">
+    <h2>Contact Submissions</h2>
+    <div id="contacts-list">Loading contacts...</div>
+  </section>
+
+  <section class="admin-section" id="admin-locations">
+    <h2>Locations</h2>
+    <div id="locations-list">Loading locations...</div>
+    <div class="location-add">
+      <h3>Add Location</h3>
+      <form id="add-location-form">
+        <input name="name" placeholder="Location name" required />
+        <input name="description" placeholder="Short description" />
+        <button type="submit">Add</button>
+      </form>
+    </div>
   </section>
 
   <link rel="stylesheet" href="/css/admin.css">
