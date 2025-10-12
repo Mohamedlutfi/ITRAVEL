@@ -1,9 +1,10 @@
 
+.margintop{
+    margin-top: 80px;
+    }
 .bodyy{
     min-height: 100vh;
         position: relative;
-        margin-top:100px;
-
 
     }
 .textshadow{

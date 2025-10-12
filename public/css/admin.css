@@ -1,9 +1,4 @@
-
-
 .admin-page{ max-width:1000px; margin:40px auto; padding:20px; color:#fff; }
-/* When using the shared `margintop` utility on the admin page, remove the extra gap
-	so content sits directly beneath the fixed navbar */
-.admin-page .margintop{ margin-top: 0 !important; }
 .admin-section{ background:rgba(0,0,0,0.5); padding:14px; border-radius:8px; margin-bottom:16px; }
 .admin-row{ display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
 .admin-row-main{ display:flex; gap:10px; align-items:center; }
