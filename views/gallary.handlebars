@@ -1,12 +1,30 @@
-<div>
-<div class="tripcards">
-    {{#each trips}}
-    <div class="card">
-        <img src="{{img}}" alt="{{title}}" class="cardimg">
-        <h2 class="cardtitle">{{title}}</h2>
-        <p class="cardtext">{{description}}</p>
-        <a href="/gallery"><button class="cardbtn">Explore {{title}}</button></a>
+<div class="bodyy">
+    <div class="bodyg">
+<div class="gallery-page">
+    <div class="gallery-header">
+        <h1 class="margintop">Gallery</h1>
+        <p class="textshadow">Browse memories uploaded by the community.</p>
     </div>
-    {{/each}}
+    <div class="gallery-grid" id="gallery-grid">
+        <!-- Cards will be populated by public/js/gallary.js -->
+    </div>
+
+    <!-- Lightbox modal -->
+    <div id="gallery-lightbox" class="gallery-lightbox" aria-hidden="true">
+        <div class="lb-backdrop"></div>
+        <div class="lb-content">
+            <button class="lb-close" aria-label="Close">×</button>
+            <img id="lb-img" src="" alt="" />
+            <div class="lb-meta">
+                <h3 id="lb-title"></h3>
+                <p id="lb-desc"></p>
+                <small id="lb-user"></small>
+            </div>
+        </div>
+    </div>
+
+    
+    <script src="/js/gallary.js"></script>
+</div>
 </div>
 </div>

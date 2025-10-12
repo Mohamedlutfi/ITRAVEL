@@ -31,7 +31,7 @@
     padding: 0;
     flex-direction: column; /* Adjust for smaller screens */
     position: relative;
-    margin-top: 150px; /* use margin to avoid overlap with fixed/sticky header */
+    margin-top: 0; /* spacing is handled by home.js via padding-top */
 }
 .infoSection {
     position: sticky;

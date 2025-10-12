@@ -24,7 +24,16 @@ const adminPassword='$2b$12$p5.UuPb9Zh.siIc78Ie.Nu9eGx9d5OLT2pkecedig2P.6CdfL1ZU
 //--- DEFINE THE PUBLIC DIRECTORY AS STATIC
 app.use(express.static('public'))
 //--- DEFINE HANDLEBARS AS THE TEMPLATING ENGINE
-app.engine('handlebars', engine())
+// Register simple helpers for templates (eq and or) so templates can do comparisons
+app.engine('handlebars', engine({
+  helpers: {
+    eq: (a, b) => String(a) === String(b),
+    or: function() {
+      const args = Array.prototype.slice.call(arguments, 0, -1); // drop options
+      return args.some(Boolean);
+    }
+  }
+}))
 app.set('view engine', 'handlebars')
 app.set('views', './views')
 //--- USE THE BODY-PARSER MIDDLEWARE TO USE POST FORMS
@@ -267,6 +276,21 @@ app.get('/home', (request, response) => {
 app.get('/gallary', (request, response) => {
     response.render('gallary') // the gallary information
 });
+
+app.get('/admin', ensureAdmin, (req, res) => {
+  res.render('admin');
+});
+
+// Public API: return all trips from all users (for the gallery)
+app.get('/trips/all', (req, res) => {
+  const sql = `SELECT trips.id, trips.user_id, trips.title, trips.description, trips.img, trips.created_at, users.user as username
+               FROM trips LEFT JOIN users ON trips.user_id = users.id
+               ORDER BY trips.created_at DESC`;
+  dab.all(sql, [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ trips: rows });
+  });
+});
 app.get('/about', (request, response) => {
     response.render('about') // the projects information
 });
@@ -354,14 +378,16 @@ dab.run(sql, [fullname, user, email, hashedPassword], function(err) {
 }); 
   }});
   //--- LOGIN PROCESSING
-  app.post('/login', (request, response) => {
+  // Accept urlencoded and multipart/form-data (multer.none()) for compatibility with clients
+  app.post('/login', upload.none(), (request, response) => {
     // Support two shapes:
     // - form posts: { email, password }
     // - legacy posts: { user, pw }
-    const email = request.body.email;
-    const password = request.body.password;
-    const user = request.body.user;
-    const pw = request.body.pw;
+  const body = request.body || {};
+  const email = body.email;
+  const password = body.password;
+  const user = body.user;
+  const pw = body.pw;
 
     // Determine identifier and password value
     const identifier = email || user;
@@ -369,6 +395,23 @@ dab.run(sql, [fullname, user, email, hashedPassword], function(err) {
 
     // Helper to detect JSON/AJAX requests
     const wantsJSON = request.is('application/json') || (request.get('Accept') || '').includes('application/json') || request.xhr;
+
+      // Special-case admin login: allow a built-in admin credential (not stored in users table)
+      if (identifier === 'admin') {
+        // Accept the configured admin password in plaintext for the special admin user.
+        if (passwordToCheck === 'wdf#2025') {
+          request.session.isLoggedIn = true;
+          request.session.user = 'admin';
+          request.session.un = 'admin';
+          request.session.userData = { id: 0, user: 'admin', fullname: 'Administrator', isAdmin: true };
+          console.log('---> ADMIN SESSION CREATED');
+          if (wantsJSON) return response.json({ success: true, redirect: '/admin' });
+          return response.redirect('/admin');
+        }
+        const model = { error: "Invalid username or password. Please try again." };
+        if (wantsJSON) return response.status(401).json({ error: model.error });
+        return response.render('login', model);
+      }
 
     if (!identifier || !passwordToCheck) {
       const model = { error: "Please provide both username/email and password." };
@@ -448,6 +491,52 @@ function ensureAuthenticated(req, res, next) {
   if (req.session && req.session.isLoggedIn && req.session.userData && req.session.userData.id) return next();
   return res.redirect('/login');
 }
+
+// Admin-check middleware
+function ensureAdmin(req, res, next) {
+  if (req.session && req.session.isLoggedIn && req.session.user === 'admin') return next();
+  // allow userData.isAdmin flag for future flexibility
+  if (req.session && req.session.userData && req.session.userData.isAdmin) return next();
+  return res.status(403).send('Forbidden');
+}
+
+// Admin routes (simple API)
+app.get('/admin/users', ensureAdmin, (req, res) => {
+  dab.all('SELECT id, fullname, user, email FROM users ORDER BY id DESC', [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ users: rows });
+  });
+});
+
+app.delete('/admin/users/:id', ensureAdmin, (req, res) => {
+  const id = req.params.id;
+  dab.run('DELETE FROM users WHERE id = ?', [id], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ deletedID: id });
+  });
+});
+
+app.get('/admin/trips', ensureAdmin, (req, res) => {
+  dab.all('SELECT trips.id, trips.title, trips.description, trips.img, users.user as username FROM trips LEFT JOIN users ON trips.user_id = users.id ORDER BY trips.created_at DESC', [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ trips: rows });
+  });
+});
+
+app.delete('/admin/trips/:id', ensureAdmin, (req, res) => {
+  const id = req.params.id;
+  dab.get('SELECT * FROM trips WHERE id = ?', [id], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.status(404).json({ error: 'Trip not found' });
+    dab.run('DELETE FROM trips WHERE id = ?', [id], function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      if (row.img) {
+        const oldPath = path.join(__dirname, 'public', row.img.replace(/^\//, '')); fs.unlink(oldPath, (e) => { /* ignore */ });
+      }
+      res.json({ deletedID: id });
+    });
+  });
+});
 
 //--- LOGOUT PROCESSING
 app.get('/logout', (req, res) => {

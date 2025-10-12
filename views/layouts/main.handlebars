@@ -11,6 +11,7 @@
         <link rel="stylesheet" href="/css/home.css">
         <link rel="stylesheet" href="/css/profile.css">
         <link rel="stylesheet" href="/css/about.css">
+        <link rel="stylesheet" href="/css/gallary.css">
     </head>
     <body>
  <header class="nav">
@@ -26,7 +27,11 @@
         <a href="http://localhost:8080/home" class="Home link">Home</a>
         <a href="http://localhost:8080/gallary" class="Gallary link">Gallary</a>
         {{#if session.isLoggedIn}}
-                    <a href="/MyProfile" class="Profile link">Profile</a>
+            {{#if (or (eq session.user "admin") session.userData.isAdmin)}}
+                <a href="/admin" class="Admin link">Admin</a>
+            {{else}}
+                <a href="/MyProfile" class="Profile link">Profile</a>
+            {{/if}}
         {{/if}}
                 <a href="http://localhost:8080/about" class="About link">About</a>
              
