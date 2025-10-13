@@ -10,8 +10,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   async function loadAll() {
     try {
+      console.log('Loading gallery data...');
       const res = await fetch('/trips/all');
       const data = await res.json();
+      console.log('Gallery data received:', data);
       render(data.trips || []);
     } catch (err) {
       console.error('Failed to load gallery', err);
@@ -40,8 +42,16 @@ document.addEventListener('DOMContentLoaded', function () {
       grid.appendChild(card);
     });
 
-    // attach click handler for lightbox
-    grid.querySelectorAll('.gallery-img').forEach(img => img.addEventListener('click', onOpen));
+    // attach click handler for lightbox and error handling for broken images
+    grid.querySelectorAll('.gallery-img').forEach(img => {
+      img.addEventListener('click', onOpen);
+      img.addEventListener('error', function() {
+        console.warn('Failed to load image:', this.src);
+        this.src = '/img/pick.jpg'; // fallback image
+        this.style.border = '2px solid red';
+        this.title = 'Image failed to load: ' + this.dataset.title;
+      });
+    });
   }
 
   function escapeHtml(s) { return (s || '').replace(/[&<>'"]/g, function (c) { return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;" }[c]; }); }
