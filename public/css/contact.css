@@ -65,6 +65,9 @@
   color: white;
   outline: none;
   transition: border-color 180ms ease, box-shadow 180ms ease, transform 120ms ease;
+  width: 100%;
+  box-sizing: border-box; /* make padding/border included in width */
+  display: block;
 }
 
 .contact-form input::placeholder,

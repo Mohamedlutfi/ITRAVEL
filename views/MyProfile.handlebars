@@ -20,16 +20,22 @@
                 <h2>Create a new Memory</h2>
                 <input type="text" name="title" class="t-Input"  placeholder="Memory Title" required>
                 <textarea name="description" class="t-Input" maxlength="75" placeholder="Short Memory description" required></textarea>
-                <br>
-                <label for="location-select">Location</label>
-                <select id="location-select" name="location_id">
-                    <option value="">(Select a location)</option>
-                    {{#each locations}}
-                        <option value="{{id}}">{{name}}</option>
-                    {{/each}}
-                </select>
-        <br>
-        <input id="trip-file" type="file" name="file" accept="image/*" placeholder="Choose a photo">
+                <div class="form-row">
+                    <div style="flex:1; min-width:180px;">
+                        <label for="location-select">Location</label>
+                        
+                        <select id="location-select" class="black" name="location_id">
+                            <option value="" class="black" > (Select a location)</option>
+                            {{#each locations}}
+                                <option value="{{id}}" class="black" >{{name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div style="flex:1; min-width:180px;">
+                        <label for="trip-file">Photo</label>
+                        <input id="trip-file" type="file" name="file" accept="image/*" placeholder="Choose a photo">
+                    </div>
+                </div>
         <div id="file-preview" aria-hidden="true" style="display:none; margin-top:8px;">
             <img id="file-preview-img" src="" alt="preview" style="max-width:120px; max-height:120px; border-radius:8px;">
         </div>
@@ -39,6 +45,15 @@
         <button type="submit">Create/Update memory</button>
     </form>
     </div>
+        <div class="profile-change-password">
+            <h3>Change password</h3>
+            <form id="change-password-form">
+                <input name="currentPassword" type="password" placeholder="Current password" required />
+                <input name="newPassword" type="password" placeholder="New password" required />
+                <button type="submit">Change password</button>
+            </form>
+            <div id="change-password-msg" style="margin-top:8px;color:#ffd;"></div>
+        </div>
     </div>
 
     </div>

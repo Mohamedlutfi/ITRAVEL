@@ -573,6 +573,46 @@ dab.run(sql, [fullname, user, email, hashedPassword], function(err) {
     });
   });
 
+  // User: change own password
+  app.post('/change-password', ensureAuthenticated, (req, res) => {
+    const userId = req.session.userData && req.session.userData.id;
+    const { currentPassword, newPassword } = req.body || {};
+    if (!currentPassword || !newPassword) return res.status(400).json({ error: 'Current and new password required' });
+    // Fetch user's current hashed password
+    dab.get('SELECT password FROM users WHERE id = ?', [userId], (err, row) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (!row) return res.status(404).json({ error: 'User not found' });
+      bcrypt.compare(currentPassword, row.password, (err2, ok) => {
+        if (err2) return res.status(500).json({ error: err2.message });
+        if (!ok) return res.status(401).json({ error: 'Current password is incorrect' });
+        // Hash new password
+        bcrypt.hash(newPassword, 10, (err3, hashed) => {
+          if (err3) return res.status(500).json({ error: err3.message });
+          dab.run('UPDATE users SET password = ? WHERE id = ?', [hashed, userId], function (e) {
+            if (e) return res.status(500).json({ error: e.message });
+            // update session
+            if (req.session && req.session.userData) req.session.userData.password = hashed;
+            res.json({ success: true });
+          });
+        });
+      });
+    });
+  });
+
+  // Admin: change any user's password
+  app.post('/admin/users/:id/password', ensureAdmin, (req, res) => {
+    const id = req.params.id;
+    const { newPassword } = req.body || {};
+    if (!newPassword) return res.status(400).json({ error: 'New password required' });
+    bcrypt.hash(newPassword, 10, (err, hashed) => {
+      if (err) return res.status(500).json({ error: err.message });
+      dab.run('UPDATE users SET password = ? WHERE id = ?', [hashed, id], function (e) {
+        if (e) return res.status(500).json({ error: e.message });
+        res.json({ success: true });
+      });
+    });
+  });
+
 // Optional: small reusable middleware for protecting routes
 function ensureAuthenticated(req, res, next) {
   if (req.session && req.session.isLoggedIn && req.session.userData && req.session.userData.id) return next();

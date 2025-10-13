@@ -70,10 +70,22 @@ document.addEventListener('DOMContentLoaded', function () {
     users.forEach(u => {
       const row = document.createElement('div');
       row.className = 'admin-row';
-      row.innerHTML = `<div class="admin-row-main"><strong>${escapeHtml(u.user)}</strong> <span>${escapeHtml(u.fullname || '')}</span> <small>${escapeHtml(u.email || '')}</small></div><div><button data-id="${u.id}" class="del-user">Delete</button></div>`;
+      row.innerHTML = `<div class="admin-row-main"><strong>${escapeHtml(u.user)}</strong> <span>${escapeHtml(u.fullname || '')}</span> <small>${escapeHtml(u.email || '')}</small></div><div><button data-id="${u.id}" class="chg-user-pw">Change PW</button> <button data-id="${u.id}" class="del-user">Delete</button></div>`;
       usersList.appendChild(row);
     });
     usersList.querySelectorAll('.del-user').forEach(b => b.addEventListener('click', onDeleteUser));
+    usersList.querySelectorAll('.chg-user-pw').forEach(b => b.addEventListener('click', onChangeUserPassword));
+  }
+
+  async function onChangeUserPassword(e) {
+    const id = e.currentTarget.dataset.id;
+    const newPw = prompt('Enter new password for this user:');
+    if (!newPw) return;
+    try {
+      const res = await fetch('/admin/users/' + id + '/password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ newPassword: newPw }) });
+      if (!res.ok) throw new Error('Failed');
+      alert('Password updated');
+    } catch (err) { alert('Failed to update password'); }
   }
 
   function renderTrips(trips) {
