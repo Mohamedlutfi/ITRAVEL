@@ -1,3 +1,19 @@
+/*
+Mohamed Lutfi Mohamed - momo24wv@student.ju.se
+Yazan Khraiba - khya24wv@student.ju.se
+
+Target grade: 5
+
+Project Web Dev Fun - 2025
+
+Administrator login: admin
+Administrator password: "wdf#2025" ---> "$2b$12$p5.UuPb9Zh.siIc78Ie.Nu9eGx9d5OLT2pkecedig2P.6CdfL1ZUa"
+
+- Some code in this project were generated with the help of Github chat bot (AI).
+- The images used in this project are either created by us, taken from free image sources, or from public domain.
+
+*/
+
 //--- LOAD THE PACKAGES 
 const express=require('express')
 const {engine}=require('express-handlebars')
@@ -356,16 +372,43 @@ app.get('/admin', ensureAdmin, (req, res) => {
   });
 });
 
-// Public API: return all trips from all users (for the gallery)
+// Public API: return paginated trips from all users (for the gallery)
 app.get('/trips/all', (req, res) => {
-  const sql = `SELECT trips.id, trips.user_id, trips.title, trips.description, trips.img, trips.created_at, users.user as username
-               , locations.name as location_name
-               FROM trips LEFT JOIN users ON trips.user_id = users.id
-               LEFT JOIN locations ON trips.location_id = locations.id
-               ORDER BY trips.created_at DESC`;
-  dab.all(sql, [], (err, rows) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 3; // 3 trips per page
+  const offset = (page - 1) * limit;
+  
+  // First, get the total count
+  const countSql = `SELECT COUNT(*) as total FROM trips`;
+  dab.get(countSql, [], (err, countResult) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json({ trips: rows });
+    
+    const total = countResult.total;
+    const totalPages = Math.ceil(total / limit);
+    
+    // Then get the paginated results
+    const sql = `SELECT trips.id, trips.user_id, trips.title, trips.description, trips.img, trips.created_at, users.user as username
+                 , locations.name as location_name
+                 FROM trips LEFT JOIN users ON trips.user_id = users.id
+                 LEFT JOIN locations ON trips.location_id = locations.id
+                 ORDER BY trips.created_at DESC
+                 LIMIT ? OFFSET ?`;
+    
+    dab.all(sql, [limit, offset], (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
+      
+      res.json({ 
+        trips: rows,
+        pagination: {
+          currentPage: page,
+          totalPages: totalPages,
+          totalItems: total,
+          itemsPerPage: limit,
+          hasNext: page < totalPages,
+          hasPrevious: page > 1
+        }
+      });
+    });
   });
 });
 app.get('/about', (request, response) => {
@@ -741,6 +784,7 @@ app.get('/logout', (req, res) => {
 //--- LISTEN TO INCOMING REQUESTS
 app.listen(port, () => {
     hashPassword("wdf#2025", 12); // hash the password "wdf#2025"
+    console.log("admin password (hashed): ", adminPassword);
     console.log(`Server running on http://localhost:${port}`)
 })
 
@@ -748,8 +792,6 @@ function hashPassword(pw, saltRounds) {
     bcrypt.hash(pw, saltRounds, function(err, hash) {
         if (err) {
             console.log('---> Error hashing password:', err);
-        } else {
-            console.log(`---> Hashed password: ${hash}`);
         }
     });
 }      

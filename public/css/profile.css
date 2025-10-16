@@ -300,12 +300,43 @@
     border: 1px solid rgba(154,103,0,0.25);
     border-radius: 8px;
 }
-.profile-change-password h3{ margin:0 0 8px 0; }
-.profile-change-password form{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-.profile-change-password input{ padding:10px; border-radius:6px; border: 0.125em solid rgb(154,103,0); background:transparent; color:#fff; flex: 1; min-width: 200px; }
-.profile-change-password button{ padding:10px 14px; border-radius:6px; background: rgb(97,65,0); color:#fff; border:none; cursor:pointer; }
-.profile-change-password button:hover{ background: rgb(154,103,0); }
-.profile-change-password #change-password-msg{ width:100%; margin-top:8px; }
+.profile-change-password h3{ 
+    margin:0 0 8px 0; 
+}
+.profile-change-password form{
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.profile-change-password input {
+    padding: 10px;
+    border-radius: 6px;
+    border: 0.125em solid rgb(154, 103, 0);
+    background: transparent;
+    color: #fff;
+    flex: 1;
+    min-width: 200px;
+}
+
+.profile-change-password button {
+    padding: 10px 14px;
+    border-radius: 6px;
+    background: rgb(97, 65, 0);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.profile-change-password button:hover {
+    background: rgb(154, 103, 0);
+}
+
+.profile-change-password #change-password-msg {
+    width: 100%;
+    margin-top: 8px;
+}
 
 @media (max-width: 600px) {
     .profile-change-password form{ flex-direction: column; align-items: stretch; }
